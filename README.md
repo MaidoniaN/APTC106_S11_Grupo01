@@ -110,6 +110,31 @@ flutter run
 
 
 ## 🧪 Usuarios de Prueba
-### El sistema precarga los siguientes usuarios para facilitar las pruebas:
+* **El sistema precarga los siguientes usuarios para facilitar las pruebas:**
+
+| Usuario | Contraseña | Rol |
+| :--- | :--- | :--- |
+| admin | 123 | Administrador |
+| dylan | 123 | Usuario / Ingeniero |
+| soporte1 | password1 | Técnico |
+
+##📡 Documentación de la API
+* **La API expone los siguientes Endpoints:**
+  
+| Método | Endpoint | Descripción | Body Requerido |
+| :--- | :--- | :--- | :--- |
+| **POST** | `/api/login` | Iniciar sesión | `{"username": "...", "password": "..."}` |
+| **GET** | `/api/tickets` | Obtener todos los tickets | N/A |
+| **POST** | `/api/tickets` | Crear un ticket | `{"titulo": "...", "descripcion": "...", "usuario_id": 1}` |
+| **PUT** | `/api/tickets/<id>/cerrar` | Cerrar ticket | `{"comentario": "Solución aplicada..."}` |
+
+
+## 👨‍💻 Autores
+### Grupo 1 
+* **Alonso Cid**
+* **Scarlett Espinoza**
+* **Christian Mattioni**
+ 
+## Proyecto desarrollado para la asignatura de Desarrollo de Aplicaciones Móviles.
 
 
