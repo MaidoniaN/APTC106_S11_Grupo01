@@ -51,8 +51,7 @@ El repositorio está organizado como un monorepo:
 
 ## ⚙️ Instrucciones de Instalación y Ejecución
 ### Sigue estos pasos para levantar el proyecto en tu entorno local.
-
-1. Configuración del Backend (Servidor)
+### 1. Configuración del Backend (Servidor)
 
 * **Navega a la carpeta del backend:**
 
