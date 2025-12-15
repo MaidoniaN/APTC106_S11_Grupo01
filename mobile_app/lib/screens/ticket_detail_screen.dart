@@ -2,7 +2,16 @@ import 'package:flutter/material.dart';
 import '../models/ticket_model.dart';
 import '../services/api_service.dart';
 
+/// Pantalla: TicketDetailScreen
+/// ----------------------------
+/// Muestra la información completa de un ticket específico.
+///
+/// Características principales:
+/// 1. Visualización de metadatos (Autor, Fecha, Estado).
+/// 2. Lógica interactiva para cerrar tickets abiertos.
+/// 3. Actualización en tiempo real de la interfaz sin necesidad de recargar la pantalla anterior.
 class TicketDetailScreen extends StatefulWidget {
+  // Objeto Ticket con los datos pasados desde la lista.
   final Ticket ticket;
 
   const TicketDetailScreen({super.key, required this.ticket});
@@ -12,18 +21,24 @@ class TicketDetailScreen extends StatefulWidget {
 }
 
 class _TicketDetailScreenState extends State<TicketDetailScreen> {
-  // Variable local para actualizar la UI sin salir de la pantalla
+  // Variable local 'copia' del ticket.
+  // La usamos para poder modificar su estado (de Abierto a Cerrado) visualmente
+  // dentro de esta misma pantalla sin tener que volver a consultar la API.
   late Ticket _ticketActual;
-  bool _isClosing = false; // Para el loading del botón
+
+  // Controla si el botón de cerrar debe mostrar un spinner de carga.
+  bool _isClosing = false;
 
   @override
   void initState() {
     super.initState();
+    // Inicializamos la variable local con los datos que vienen del constructor
     _ticketActual = widget.ticket;
   }
 
-  // Función para mostrar el diálogo de cierre
+  /// Muestra un cuadro de diálogo (Alert) solicitando la justificación del cierre.
   void _mostrarDialogoCierre() {
+    // Controlador temporal para capturar el texto del diálogo
     final comentarioController = TextEditingController();
 
     showDialog(
@@ -32,7 +47,7 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
         return AlertDialog(
           title: const Text('Cerrar Ticket'),
           content: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: MainAxisSize.min, // Se ajusta al contenido
             children: [
               const Text('Por favor ingresa la solución o motivo del cierre:'),
               const SizedBox(height: 10),
@@ -47,14 +62,16 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
             ],
           ),
           actions: [
+            // Botón Cancelar: Cierra el diálogo sin hacer nada
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: const Text('CANCELAR'),
             ),
+            // Botón Confirmar: Cierra el diálogo y ejecuta la lógica de negocio
             ElevatedButton(
               onPressed: () async {
-                Navigator.pop(context); // Cerrar diálogo
-                _ejecutarCierre(comentarioController.text);
+                Navigator.pop(context); // 1. Cerrar el pop-up
+                _ejecutarCierre(comentarioController.text); // 2. Procesar
               },
               child: const Text('CERRAR TICKET'),
             ),
@@ -64,27 +81,38 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
     );
   }
 
+  /// Lógica de negocio para cerrar el ticket.
+  ///
+  /// 1. Llama al servicio API (PUT).
+  /// 2. Si es exitoso, actualiza el estado local (_ticketActual) para reflejar el cambio.
+  /// 3. Muestra feedback al usuario.
   void _ejecutarCierre(String comentario) async {
+    // Activamos el indicador de carga en el botón
     setState(() => _isClosing = true);
 
+    // Llamada al Backend
     final exito = await ApiService.closeTicket(_ticketActual.id, comentario);
 
     if (exito) {
-      // Actualizamos el estado localmente para reflejar el cambio inmediato
+      // ACTUALIZACIÓN OPTIMISTA DE LA UI:
+      // Reconstruimos el objeto Ticket local con los nuevos datos (Estado cerrado y comentario).
+      // Esto hace que la pantalla se "pinte" de verde instantáneamente.
       setState(() {
         _isClosing = false;
-        // Creamos un nuevo objeto ticket con los datos actualizados
+
         _ticketActual = Ticket(
           id: _ticketActual.id,
           titulo: _ticketActual.titulo,
           descripcion: _ticketActual.descripcion,
           autor: _ticketActual.autor,
-          estado: 'Cerrado', // Cambiamos estado
+          estado: 'Cerrado', // <--- Cambio forzado de estado
           fecha: _ticketActual.fecha,
-          comentarioCierre: comentario, // Guardamos el comentario
+          comentarioCierre:
+              comentario, // <--- Guardamos lo que escribió el usuario
         );
       });
 
+      // Verificamos 'mounted' antes de usar el contexto en operaciones asíncronas
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -94,6 +122,7 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
         );
       }
     } else {
+      // Manejo de errores
       setState(() => _isClosing = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -108,6 +137,7 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Variables auxiliares para definir colores según el estado actual
     final bool esCerrado = _ticketActual.estado == 'Cerrado';
     final Color colorEstado = esCerrado ? Colors.green : Colors.orange;
 
@@ -118,19 +148,20 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // --- TÍTULO DEL TICKET ---
             Text(
               _ticketActual.titulo,
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
 
-            // CHIP DE ESTADO
+            // --- CHIP (ETIQUETA) DE ESTADO ---
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: colorEstado.withOpacity(0.1),
+                color: colorEstado.withOpacity(0.1), // Fondo suave
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: colorEstado),
+                border: Border.all(color: colorEstado), // Borde sólido
               ),
               child: Text(
                 _ticketActual.estado.toUpperCase(),
@@ -142,11 +173,13 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
             ),
             const SizedBox(height: 20),
 
+            // --- METADATOS (AUTOR Y FECHA) ---
             _infoRow(Icons.person, "Autor:", _ticketActual.autor),
             const SizedBox(height: 10),
             _infoRow(Icons.calendar_today, "Fecha:", _ticketActual.fecha),
             const Divider(height: 30),
 
+            // --- DESCRIPCIÓN ---
             const Text(
               "Descripción del problema:",
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -159,9 +192,11 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
 
             const SizedBox(height: 30),
 
-            // --- LÓGICA DE CIERRE ---
+            // --- SECCIÓN CONDICIONAL (EL "CEREBRO" DE LA PANTALLA) ---
+            // Aquí decidimos qué mostrar según el estado del ticket.
             if (esCerrado) ...[
-              // Si está cerrado, mostramos el comentario de solución
+              // CASO 1: TICKET CERRADO
+              // Mostramos un panel verde con la solución final.
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
@@ -187,12 +222,14 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
                       ],
                     ),
                     const SizedBox(height: 8),
+                    // Usamos '??' por seguridad, aunque si está cerrado debería tener comentario
                     Text(_ticketActual.comentarioCierre ?? "Sin comentarios."),
                   ],
                 ),
               ),
             ] else ...[
-              // Si está abierto, mostramos el botón
+              // CASO 2: TICKET ABIERTO
+              // Mostramos el botón grande para cerrar el ticket.
               SizedBox(
                 width: double.infinity,
                 height: 50,
@@ -202,6 +239,7 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
                     backgroundColor: Colors.orange,
                     foregroundColor: Colors.white,
                   ),
+                  // Cambiamos el icono por un spinner si está cargando
                   icon: _isClosing
                       ? const SizedBox(
                           width: 20,
@@ -222,6 +260,7 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
     );
   }
 
+  /// Widget auxiliar para reutilizar código en las filas de información (Icono + Texto)
   Widget _infoRow(IconData icon, String label, String value) {
     return Row(
       children: [

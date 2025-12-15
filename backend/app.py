@@ -102,9 +102,9 @@ def crear_datos_iniciales():
             print("Inicializando sistema: Creando usuarios de prueba...")
             
             # Instanciamos los objetos Usuario
-            admin = Usuario(username='admin', password='123', nombre_completo='Administrador')
-            user1 = Usuario(username='dylan', password='123', nombre_completo='Dylan Gorosito')
-            user2 = Usuario(username='soporte1', password='password1', nombre_completo='Soporte Técnico')
+            admin = Usuario(username='admin', password='admin123', nombre_completo='Administrador')
+            user1 = Usuario(username='soporte1', password='password1', nombre_completo='Soporte Técnico 1')
+            user2 = Usuario(username='soporte2', password='password2', nombre_completo='Soporte Técnico 2')
             
             # Guardamos en la base de datos
             db.session.add_all([admin, user1, user2])
