@@ -53,13 +53,14 @@ El repositorio está organizado como un monorepo:
 ### Sigue estos pasos para levantar el proyecto en tu entorno local.
 
 1. Configuración del Backend (Servidor)
-Navega a la carpeta del backend:
+
+* **Navega a la carpeta del backend:**
 
 ``` Bash
 cd backend
 ```
 
-## Crea y activa un entorno virtual (Opcional pero recomendado):
+* **Crea y activa un entorno virtual (Opcional pero recomendado):**
 
 ``` Bash
 # Windows
@@ -70,4 +71,26 @@ python -m venv venv
 python3 -m venv venv
 source venv/bin/activate
 
+```
+
+* **Instala las dependencias:**
+
+``` Bash
+pip install flask flask-sqlalchemy flask-cors
+```
+
+* **Ejecuta el servidor:**
+
+``` Bash
+python app.py
+```
+
+* **El servidor correrá en http://0.0.0.0:5000. Al iniciar por primera vez, creará automáticamente el archivo gestion_tickets.db y poblará usuarios de prueba.**
+
+
+2. Configuración del Frontend (App Móvil)
+* **Abre una nueva terminal y navega a la carpeta de la app:**
+
+``` Bash
+cd mobile_app
 ```
