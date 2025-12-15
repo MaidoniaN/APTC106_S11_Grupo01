@@ -87,9 +87,29 @@ python app.py
 * **El servidor correrá en http://0.0.0.0:5000. Al iniciar por primera vez, creará automáticamente el archivo gestion_tickets.db y poblará usuarios de prueba.**
 
 
-2. Configuración del Frontend (App Móvil)
+### 2. Configuración del Frontend (App Móvil)
 * **Abre una nueva terminal y navega a la carpeta de la app:**
 
 ``` Bash
 cd mobile_app
 ```
+Instala las dependencias de Flutter:
+
+``` Bash
+flutter pub get
+```
+
+Ejecuta la aplicación (recomendado usar Emulador Android):
+
+Bash
+
+``` Bash
+flutter run
+```
+**Nota sobre la Conexión: La app está configurada para conectarse a http://10.0.2.2:5000/api, que es la dirección IP especial que usa el emulador de Android para acceder al localhost de tu computadora. Si usas un dispositivo físico, deberás cambiar esta IP en lib/services/api_service.dart por la IP local de tu PC.**
+
+
+## 🧪 Usuarios de Prueba
+### El sistema precarga los siguientes usuarios para facilitar las pruebas:
+
+
