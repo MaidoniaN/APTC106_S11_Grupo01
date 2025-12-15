@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../services/api_service.dart';
 import 'ticket_list_screen.dart';
 
@@ -60,11 +61,32 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const Icon(Icons.support_agent, size: 80, color: Colors.blue),
+              const SizedBox(height: 20),
               const Text(
                 'ServiceDesk Login',
                 style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 50),
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Prototipo v2.0',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                    const Icon(
+                      FontAwesomeIcons.flask,
+                      size: 20,
+                      color: Colors.blue,
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 30),
               TextField(
                 controller: _userController,
                 decoration: const InputDecoration(
