@@ -7,8 +7,11 @@ Descripción:
     Servidor API RESTful desarrollado en Flask.
     Este archivo contiene la configuración del servidor, la definición del modelo de datos
     (tablas) y los endpoints (rutas) que consumirá la aplicación móvil.
+    
+    MODIFICADO: Implementación de IDs tipo UUID (GUID) para mayor seguridad.
 """
 
+import uuid # <--- LIBRERÍA NUEVA
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
@@ -48,8 +51,8 @@ class Usuario(db.Model):
     """
     __tablename__ = 'usuarios'
     
-    # Clave Primaria (Primary Key) autoincremental
-    id = db.Column(db.Integer, primary_key=True)
+    # Clave Primaria tipo UUID (String de 36 caracteres)
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     
     # Nombre de usuario único para el login
     username = db.Column(db.String(50), unique=True, nullable=False)
@@ -67,7 +70,9 @@ class Ticket(db.Model):
     """
     __tablename__ = 'tickets'
     
-    id = db.Column(db.Integer, primary_key=True)
+    # Clave Primaria tipo UUID
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    
     titulo = db.Column(db.String(100), nullable=False)
     descripcion = db.Column(db.Text, nullable=False)
     
@@ -80,8 +85,8 @@ class Ticket(db.Model):
     # Campo opcional (nullable=True) para guardar la solución al cerrar el ticket
     comentario_cierre = db.Column(db.Text, nullable=True)
     
-    # Clave Foránea (Foreign Key): Enlaza este ticket con el ID de un usuario existente
-    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
+    # Clave Foránea (Foreign Key): Ahora es String(36) para coincidir con usuarios.id
+    usuario_id = db.Column(db.String(36), db.ForeignKey('usuarios.id'), nullable=False)
 
 
 # ==========================================
@@ -99,9 +104,9 @@ def crear_datos_iniciales():
         
         # Verificamos si la tabla de usuarios está vacía para no duplicar datos
         if not Usuario.query.first():
-            print("Inicializando sistema: Creando usuarios de prueba...")
+            print("Inicializando sistema con UUIDs: Creando usuarios de prueba...")
             
-            # Instanciamos los objetos Usuario
+            # Instanciamos los objetos Usuario (Los IDs se generan solos)
             admin = Usuario(username='admin', password='admin123', nombre_completo='Administrador')
             user1 = Usuario(username='soporte1', password='password1', nombre_completo='Soporte Técnico 1')
             user2 = Usuario(username='soporte2', password='password2', nombre_completo='Soporte Técnico 2')
@@ -133,11 +138,12 @@ def login():
     user_db = Usuario.query.filter_by(username=usuario_env, password=password_env).first()
     
     if user_db:
-        # Si existe, retornamos sus datos clave (especialmente el ID)
+        # Si existe, retornamos sus datos clave.
+        # user_db.id ahora es un String UUID.
         return jsonify({
             'mensaje': 'Login exitoso', 
             'usuario': user_db.nombre_completo,
-            'id': user_db.id
+            'id': user_db.id 
         }), 200
         
     # Si no existe o la contraseña está mal
@@ -184,8 +190,15 @@ def create_ticket():
     now = datetime.now()
     fecha_str = f"{now.year}-{now.month}-{now.day}"
     
-    # Validamos que venga el ID del usuario, si no, asignamos el ID 1 por defecto
-    user_id = data.get('usuario_id', 1) 
+    # Validamos que venga el ID del usuario.
+    # Como ahora son UUIDs, el default '1' (entero) daría error.
+    user_id = data.get('usuario_id')
+    
+    # Fallback de seguridad: Si no viene ID, usamos el primer usuario de la DB
+    if not user_id:
+        u = Usuario.query.first()
+        if u:
+            user_id = u.id
 
     # Creamos el objeto Ticket
     nuevo_ticket = Ticket(
@@ -204,7 +217,8 @@ def create_ticket():
     return jsonify({'mensaje': 'Ticket creado exitosamente'}), 201
 
 
-@app.route('/api/tickets/<int:ticket_id>/cerrar', methods=['PUT'])
+# IMPORTANTE: Cambiamos <int:ticket_id> por <string:ticket_id>
+@app.route('/api/tickets/<string:ticket_id>/cerrar', methods=['PUT'])
 def close_ticket(ticket_id):
     """
     Ruta: /api/tickets/<id>/cerrar

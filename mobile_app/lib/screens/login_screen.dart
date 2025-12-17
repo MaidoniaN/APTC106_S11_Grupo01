@@ -7,7 +7,7 @@ import 'ticket_list_screen.dart';
 /// ---------------------
 /// Pantalla de inicio de la aplicación encargada de la autenticación.
 /// Su función principal es validar las credenciales del usuario contra el Backend
-/// y obtener el ID de sesión necesario para las operaciones posteriores.
+/// y obtener el ID de sesión y el Nombre del usuario.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -21,15 +21,14 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passController = TextEditingController();
 
   // Variable de estado para controlar la interfaz durante la petición de red.
-  // Si es true, muestra un spinner y deshabilita el botón.
   bool _isLoading = false;
 
   /// Lógica de inicio de sesión
   /// ------------------------
   /// 1. Cierra el teclado.
   /// 2. Activa el estado de carga.
-  /// 3. Llama al servicio de API.
-  /// 4. Navega o muestra error según el resultado.
+  /// 3. Llama al servicio de API (ApiService.login).
+  /// 4. Navega enviando ID y Nombre, o muestra error.
   void _iniciarSesion() async {
     // Cierra el teclado virtual si está abierto
     FocusScope.of(context).unfocus();
@@ -39,9 +38,10 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = true;
     });
 
-    // Llamada asíncrona al backend
-    final usuarioId = await ApiService.login(
-      _userController.text.trim(), // trim() elimina espacios accidentales
+    // Llamada asíncrona al backend.
+    // MODIFICADO: Ahora esperamos un Mapa {'id': ..., 'nombre': ...}
+    final resultado = await ApiService.login(
+      _userController.text.trim(),
       _passController.text.trim(),
     );
 
@@ -50,20 +50,23 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = false;
     });
 
-    // Si el login fue exitoso (usuarioId tiene valor)
-    if (usuarioId != null) {
+    // Si el login fue exitoso (el resultado no es nulo)
+    if (resultado != null) {
       if (context.mounted) {
-        // Navegamos a la pantalla principal, reemplazando la actual (no se puede volver atrás)
-        // IMPORTANTE: Pasamos el 'usuarioId' obtenido para mantener la sesión.
+        // Navegamos a la pantalla principal.
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => TicketListScreen(userId: usuarioId),
+            // CAMBIO: Ahora pasamos tanto el ID como el Nombre real
+            builder: (context) => TicketListScreen(
+              userId: resultado['id'],
+              nombreUsuario: resultado['nombre'],
+            ),
           ),
         );
       }
     } else {
-      // Si falló (usuarioId es null)
+      // Si falló (resultado es null)
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -78,8 +81,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Usamos Center y SingleChildScrollView para asegurar que el diseño
-      // se vea bien en pantallas pequeñas y cuando sale el teclado.
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -107,9 +108,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       'Prototipo v2.0',
                       style: TextStyle(color: Colors.grey),
                     ),
-                    const SizedBox(width: 8), // Pequeño espacio
+                    const SizedBox(width: 8),
                     const Icon(
-                      FontAwesomeIcons.flask, // Icono de laboratorio
+                      FontAwesomeIcons.flask,
                       size: 20,
                       color: Colors.blue,
                     ),
@@ -133,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
               // --- CAMPO DE CONTRASEÑA ---
               TextField(
                 controller: _passController,
-                obscureText: true, // Oculta los caracteres
+                obscureText: true,
                 decoration: const InputDecoration(
                   labelText: 'Contraseña',
                   prefixIcon: Icon(Icons.lock),
@@ -144,10 +145,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
               // --- BOTÓN DE INGRESO ---
               SizedBox(
-                width: double.infinity, // Ocupa todo el ancho disponible
+                width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  // Si _isLoading es true, onPressed es null (botón deshabilitado)
                   onPressed: _isLoading ? null : _iniciarSesion,
                   child: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)

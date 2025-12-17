@@ -4,8 +4,9 @@
 /// Actúa como un contenedor (objeto) para transportar la información de un ticket
 /// desde la respuesta JSON de la API hacia los widgets de la interfaz.
 class Ticket {
-  // Identificador único del ticket en la base de datos (Primary Key)
-  final int id;
+  // Identificador único del ticket (Primary Key).
+  // CAMBIO: Ahora es String para soportar GUIDs (ej: "a1b2-c3d4...")
+  final String id;
 
   // Título o asunto del incidente
   final String titulo;
@@ -49,7 +50,8 @@ class Ticket {
   /// de la clase (camelCase de Dart).
   factory Ticket.fromJson(Map<String, dynamic> json) {
     return Ticket(
-      id: json['id'],
+      // CAMBIO: Aseguramos la conversión a String del ID recibido
+      id: json['id'].toString(),
       titulo: json['titulo'],
       descripcion: json['descripcion'],
       autor: json['autor'],
