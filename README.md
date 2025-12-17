@@ -41,7 +41,7 @@ El repositorio está organizado como un monorepo:
 │
 └── /mobile_app         # Código fuente de la App (Flutter)
     ├── lib/
-    │   ├── data/       # Modelos de datos
+    │   ├── model/      # Modelos de datos
     │   ├── screens/    # Pantallas (UI)
     │   └── services/   # Lógica de conexión HTTP
     └── pubspec.yaml    # Dependencias de Dart
