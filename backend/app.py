@@ -1,17 +1,15 @@
 """
 ServiceDesk Backend API
 -----------------------
-Autor: [Tu Nombre / Grupo 01]
+Autor: [Grupo 01]
 Fecha: Diciembre 2025
 Descripción:
     Servidor API RESTful desarrollado en Flask.
     Este archivo contiene la configuración del servidor, la definición del modelo de datos
     (tablas) y los endpoints (rutas) que consumirá la aplicación móvil.
-    
-    MODIFICADO: Implementación de IDs tipo UUID (GUID) para mayor seguridad.
 """
 
-import uuid # <--- LIBRERÍA NUEVA
+import uuid 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
@@ -216,8 +214,6 @@ def create_ticket():
     # Retornamos código 201 (Created)
     return jsonify({'mensaje': 'Ticket creado exitosamente'}), 201
 
-
-# IMPORTANTE: Cambiamos <int:ticket_id> por <string:ticket_id>
 @app.route('/api/tickets/<string:ticket_id>/cerrar', methods=['PUT'])
 def close_ticket(ticket_id):
     """

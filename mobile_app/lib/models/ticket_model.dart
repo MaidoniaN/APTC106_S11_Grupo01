@@ -4,29 +4,15 @@
 /// Actúa como un contenedor (objeto) para transportar la información de un ticket
 /// desde la respuesta JSON de la API hacia los widgets de la interfaz.
 class Ticket {
-  // Identificador único del ticket (Primary Key).
-  // CAMBIO: Ahora es String para soportar GUIDs (ej: "a1b2-c3d4...")
-  final String id;
-
-  // Título o asunto del incidente
-  final String titulo;
-
-  // Detalle extenso del problema reportado
-  final String descripcion;
-
-  // Nombre del creador del ticket (ej: "Dylan Gorosito").
-  // Este dato ya viene procesado desde el backend gracias a la relación SQL.
-  final String autor;
-
-  // Estado actual: 'Abierto' o 'Cerrado'
-  final String estado;
-
-  // Fecha de creación en formato texto (YYYY-MM-DD)
-  final String fecha;
-
-  // Campo opcional (Nullable).
-  // Solo tendrá valor si el estado es 'Cerrado'. Si está 'Abierto', será null.
-  final String? comentarioCierre;
+  final String id; // Identificador único del ticket (Primary Key).
+  final String titulo; // Título o asunto del incidente
+  final String descripcion; // Detalle extenso del problema reportado
+  final String autor; // Nombre del creador del ticket
+  //Este dato ya viene procesado desde el backend gracias a la relación SQL.
+  final String estado; // Estado actual: 'Abierto' o 'Cerrado'
+  final String fecha; // Fecha de creación en formato texto (YYYY-MM-DD)
+  final String? comentarioCierre; // Campo opcional (Nullable).
+  //Solo tendrá valor si el estado es 'Cerrado'. Si está 'Abierto', será null.
 
   // Constructor estándar de la clase.
   // 'required' obliga a que estos datos existan al crear el objeto.
@@ -50,7 +36,6 @@ class Ticket {
   /// de la clase (camelCase de Dart).
   factory Ticket.fromJson(Map<String, dynamic> json) {
     return Ticket(
-      // CAMBIO: Aseguramos la conversión a String del ID recibido
       id: json['id'].toString(),
       titulo: json['titulo'],
       descripcion: json['descripcion'],

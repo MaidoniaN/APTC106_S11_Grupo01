@@ -4,22 +4,15 @@ import '../services/api_service.dart';
 /// Pantalla: CreateTicketScreen
 /// ----------------------------
 /// Formulario encargado de la creación de nuevos incidentes.
-///
-/// MODIFICADO: Ahora recibe el userId como String (UUID).
 class CreateTicketScreen extends StatefulWidget {
-  // ID del usuario que está logueado actualmente.
-  // CAMBIO: int -> String para soportar UUIDs
-  final String userId;
-
+  final String userId; // ID del usuario que está logueado actualmente.
   const CreateTicketScreen({super.key, required this.userId});
-
   @override
   State<CreateTicketScreen> createState() => _CreateTicketScreenState();
 }
 
 class _CreateTicketScreenState extends State<CreateTicketScreen> {
   final _formKey = GlobalKey<FormState>();
-
   final tituloController = TextEditingController();
   final descController = TextEditingController();
 

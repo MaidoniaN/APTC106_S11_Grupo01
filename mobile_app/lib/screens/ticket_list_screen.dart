@@ -11,12 +11,10 @@ import 'ticket_detail_screen.dart';
 /// Muestra el listado de todos los tickets existentes y permite la navegación
 /// hacia el detalle o la creación de nuevos registros.
 ///
-/// MODIFICADO: Recibe userId (para lógica) y nombreUsuario (para saludo).
 class TicketListScreen extends StatefulWidget {
   // ID del usuario logueado (UUID). Necesario para crear nuevos tickets.
   final String userId;
-
-  // NUEVO: Nombre real del usuario para mostrar en la interfaz.
+  // Nombre real del usuario para mostrar en la interfaz.
   final String nombreUsuario;
 
   const TicketListScreen({

@@ -11,11 +11,8 @@ import '../services/api_service.dart';
 /// 2. Lógica interactiva para cerrar tickets abiertos.
 /// 3. Actualización en tiempo real de la interfaz sin necesidad de recargar la pantalla anterior.
 class TicketDetailScreen extends StatefulWidget {
-  // Objeto Ticket con los datos pasados desde la lista.
-  final Ticket ticket;
-
+  final Ticket ticket; // Objeto Ticket con los datos pasados desde la lista.
   const TicketDetailScreen({super.key, required this.ticket});
-
   @override
   State<TicketDetailScreen> createState() => _TicketDetailScreenState();
 }
