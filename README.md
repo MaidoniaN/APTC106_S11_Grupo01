@@ -129,6 +129,11 @@ flutter run
 | **PUT** | `/api/tickets/<id>/cerrar` | Cerrar ticket | `{"comentario": "Solución aplicada..."}` |
 
 
+### Demostración de la Aplicación
+Haz clic en la imagen a continuación para ver el video demostrativo en YouTube:
+
+[![Demostración ServiceDesk Lite](https://img.youtube.com/vi/-lVJpdf74iI/0.jpg)](https://www.youtube.com/watch?v=-lVJpdf74iI)
+
 ## 👨‍💻 Autores
 ### Grupo 1 
 * **Alonso Cid**
