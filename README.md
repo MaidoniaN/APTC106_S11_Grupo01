@@ -114,9 +114,9 @@ flutter run
 
 | Usuario | Contraseña | Rol |
 | :--- | :--- | :--- |
-| admin | 123 | Administrador |
-| dylan | 123 | Usuario / Ingeniero |
+| admin | admin123 | Administrador |
 | soporte1 | password1 | Técnico |
+| soporte2 | password2 | Técnico |
 
 ##📡 Documentación de la API
 * **La API expone los siguientes Endpoints:**
